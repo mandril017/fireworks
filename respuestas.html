@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Una Noche Especial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #000;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-align: center;
+            z-index: 2;
+        }
+        h1 {
+            color: #ff4d4d;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="fireworks"></canvas>
+    <div class="container">
+        <h1>Roxana "Muñequita" Alaraca, te amo ❤️</h1>
+    </div>
+    <script>
+        const canvas = document.getElementById("fireworks");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const catImage = new Image();
+        catImage.src = "https://cdn-icons-png.flaticon.com/512/16732/16732606.png"; 
+
+        const tulipImage = new Image();
+        tulipImage.src = "https://cdn-icons-png.flaticon.com/512/1196/1196535.png";
+
+        let fireworks = [];
+
+        class Firework {
+            constructor(x, y, image) {
+                this.x = x;
+                this.y = y;
+                this.image = image;
+                this.particles = [];
+                for (let i = 0; i < 10; i++) {
+                    this.particles.push({
+                        x: this.x,
+                        y: this.y,
+                        velocityX: (Math.random() - 0.5) * 5,
+                        velocityY: (Math.random() - 0.5) * 5,
+                        life: 100
+                    });
+                }
+            }
+            update() {
+                this.particles.forEach(p => {
+                    p.x += p.velocityX;
+                    p.y += p.velocityY;
+                    p.life--;
+                });
+                this.particles = this.particles.filter(p => p.life > 0);
+            }
+            draw() {
+                this.particles.forEach(p => {
+                    ctx.drawImage(this.image, p.x, p.y, 30, 30);
+                });
+            }
+        }
+
+        function animate() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            fireworks.forEach(firework => {
+                firework.update();
+                firework.draw();
+            });
+            fireworks = fireworks.filter(firework => firework.particles.length > 0);
+            requestAnimationFrame(animate);
+        }
+
+        function createFirework() {
+            const image = Math.random() > 0.5 ? catImage : tulipImage;
+            fireworks.push(new Firework(Math.random() * canvas.width, Math.random() * canvas.height, image));
+        }
+
+        setInterval(createFirework, 500);
+        animate();
+    </script>
+</body>
+</html>
